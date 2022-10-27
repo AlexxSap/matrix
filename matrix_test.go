@@ -17,7 +17,10 @@ func Test_Index(t *testing.T) {
 
 	test := func(row, column, expected int) {
 		t.Run(strconv.Itoa(expected), func(t *testing.T) {
-			actual := m.index(row, column)
+			actual, err := m.index(row, column)
+			if err != nil {
+				t.Fatal(err)
+			}
 			if actual != expected {
 				t.Errorf("act: %d, exp: %d", actual, expected)
 			}
@@ -47,7 +50,10 @@ func Test_Pos(t *testing.T) {
 
 	test := func(index, expRow, expCol int) {
 		t.Run(strconv.Itoa(index), func(t *testing.T) {
-			actRow, actCol := m.pos(index)
+			actRow, actCol, err := m.pos(index)
+			if err != nil {
+				t.Fatal(err)
+			}
 			if actRow != expRow || actCol != expCol {
 				t.Errorf("act: %d, %d, exp: %d,%d", actRow, actCol, expRow, expCol)
 			}
@@ -63,4 +69,56 @@ func Test_Pos(t *testing.T) {
 	test(6, 2, 0)
 	test(7, 2, 1)
 	test(8, 2, 2)
+}
+
+func Test_IndexErrors(t *testing.T) {
+	var m *Matrix[int]
+	m = nil
+
+	_, err := m.index(0, 0)
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	m = NewMatrix[int](3, 3)
+	_, err = m.index(-1, 0)
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
+	}
+
+	_, err = m.index(1, -1)
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
+	}
+
+	_, err = m.index(9, 0)
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
+	}
+
+	_, err = m.index(1, 8)
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
+	}
+}
+
+func Test_PosError(t *testing.T) {
+	var m *Matrix[int]
+	m = nil
+
+	_, _, err := m.pos(0)
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	m = NewMatrix[int](3, 3)
+	_, _, err = m.pos(-1)
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
+	}
+
+	_, _, err = m.pos(11)
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
+	}
 }
