@@ -1,11 +1,25 @@
 package matrix
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"testing"
-
-	"github.com/google/go-cmp/cmp"
 )
+
+func compareSlices[T comparable](act, exp []T) error {
+	if len(act) != len(exp) {
+		return errors.New("different len")
+	}
+
+	for i := 0; i < len(act); i++ {
+		if act[i] != exp[i] {
+			return fmt.Errorf("act: %v exp: %v at index: %d", act[i], exp[i], i)
+		}
+	}
+
+	return nil
+}
 
 func Test_Index(t *testing.T) {
 	m := NewZeroMatrix[int](3, 3)
@@ -164,8 +178,8 @@ func TestRowData(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if diff := cmp.Diff(expRow, row); diff != "" {
-		t.Error(diff)
+	if cmpRes := compareSlices(row, expRow); cmpRes != nil {
+		t.Error(cmpRes)
 	}
 
 	strs := []string{"1", "2", "3", "4", "some 5", "or 6", "7", "8", "9"}
@@ -179,10 +193,9 @@ func TestRowData(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if diff := cmp.Diff(expStrings, rowStrings); diff != "" {
-		t.Error(diff)
+	if cmpRes := compareSlices(rowStrings, expStrings); cmpRes != nil {
+		t.Error(cmpRes)
 	}
-
 }
 
 func TestAllOfRow(t *testing.T) {
@@ -221,7 +234,7 @@ func TestAllOfRow(t *testing.T) {
 	}
 
 	if actual {
-		t.Errorf("act: %d exp: %d", actual, false)
+		t.Errorf("act: %t exp: %t", actual, false)
 	}
 
 	actual, err = m.AllOfRow(1, f)
@@ -230,7 +243,7 @@ func TestAllOfRow(t *testing.T) {
 	}
 
 	if !actual {
-		t.Errorf("act: %d exp: %d", actual, true)
+		t.Errorf("act: %t exp: %t", actual, true)
 	}
 
 }

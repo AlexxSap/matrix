@@ -53,7 +53,7 @@ func (m *Matrix[T]) RowData(row int) ([]T, error) {
 		return []T{}, errors.New(InvalidIndexError)
 	}
 
-	res := make([]T, m.colCount)
+	res := make([]T, 0, m.colCount)
 	i, _ := m.index(row, 0)
 	end, _ := m.index(row, m.colCount-1)
 
@@ -85,4 +85,4 @@ func (m *Matrix[T]) AllOfRow(row int, f func(cell T) bool) (bool, error) {
 /// TODO сдвиг строк-столбцов
 /// транспонирование
 /// сдвиг отдельных ячеек
-/// проверка условия для строки - столбца
+/// проверка условия для столбца
