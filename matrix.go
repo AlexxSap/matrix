@@ -22,7 +22,6 @@ func NewMatrix[T any](data []T, rows, columns int) (*Matrix[T], error) {
 	if len(data) != rows*columns {
 		return nil, errors.New(InvalidMatrixSize)
 	}
-
 	return &Matrix[T]{data, rows, columns}, nil
 }
 

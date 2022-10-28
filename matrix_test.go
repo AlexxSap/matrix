@@ -169,6 +169,21 @@ func TestRowData(t *testing.T) {
 		t.Error(diff)
 	}
 
+	strs := []string{"1", "2", "3", "4", "some 5", "or 6", "7", "8", "9"}
+	ms, err := NewMatrix(strs, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expStrings := []string{"4", "some 5", "or 6"}
+	rowStrings, err := ms.RowData(1)
+	if err != nil {
+		t.Error(err)
+	}
+	if diff := cmp.Diff(expStrings, rowStrings); diff != "" {
+		t.Error(diff)
+	}
+
 }
 
 func TestAllOfRow(t *testing.T) {
