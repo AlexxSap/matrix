@@ -149,17 +149,17 @@ func TestNewMatrixError(t *testing.T) {
 }
 
 func TestRowData(t *testing.T) {
-	{
-		var m *Matrix[int]
-		m = nil
 
-		_, err := m.RowData(2)
-		if err.Error() != NilMatrixObject {
-			t.Fatal("check nil object fail")
-		}
+	var m *Matrix[int]
+	m = nil
+
+	_, err := m.RowData(2)
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
 	}
+
 	d := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
-	m, err := NewMatrix(d, 3, 3)
+	m, err = NewMatrix(d, 3, 3)
 	if err != nil {
 		t.Error(err)
 	}
@@ -199,18 +199,17 @@ func TestRowData(t *testing.T) {
 }
 
 func TestAllOfRow(t *testing.T) {
-	{
-		var m *Matrix[int]
-		m = nil
 
-		_, err := m.AllOfRow(2, func(cell int) bool { return false })
-		if err.Error() != NilMatrixObject {
-			t.Fatal("check nil object fail")
-		}
+	var m *Matrix[int]
+	m = nil
+
+	_, err := m.AllOfRow(2, func(cell int) bool { return false })
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
 	}
 
 	d := []int{1, 2, 3, 4, 8, 12, 7, 8, 9}
-	m, err := NewMatrix(d, 3, 3)
+	m, err = NewMatrix(d, 3, 3)
 	if err != nil {
 		t.Error(err)
 	}
