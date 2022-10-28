@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	m := matrix.NewMatrix[int](5, 5)
+	m := matrix.NewZeroMatrix[int](5, 5)
 	fmt.Println(m)
 }

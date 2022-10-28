@@ -3,10 +3,12 @@ package matrix
 import (
 	"strconv"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func Test_Index(t *testing.T) {
-	m := NewMatrix[int](3, 3)
+	m := NewZeroMatrix[int](3, 3)
 	/*
 		column \ row    0 1 2
 						_ _ _
@@ -39,7 +41,7 @@ func Test_Index(t *testing.T) {
 }
 
 func Test_Pos(t *testing.T) {
-	m := NewMatrix[int](3, 3)
+	m := NewZeroMatrix[int](3, 3)
 	/*
 		column \ row    0 1 2
 						_ _ _
@@ -80,7 +82,7 @@ func Test_IndexErrors(t *testing.T) {
 		t.Fatal("check nil object fail")
 	}
 
-	m = NewMatrix[int](3, 3)
+	m = NewZeroMatrix[int](3, 3)
 	_, err = m.index(-1, 0)
 	if err.Error() != InvalidIndexError {
 		t.Fatal("check invalid index fail")
@@ -111,7 +113,7 @@ func Test_PosError(t *testing.T) {
 		t.Fatal("check nil object fail")
 	}
 
-	m = NewMatrix[int](3, 3)
+	m = NewZeroMatrix[int](3, 3)
 	_, _, err = m.pos(-1)
 	if err.Error() != InvalidIndexError {
 		t.Fatal("check invalid index fail")
@@ -121,4 +123,54 @@ func Test_PosError(t *testing.T) {
 	if err.Error() != InvalidIndexError {
 		t.Fatal("check invalid index fail")
 	}
+}
+
+func TestNewMatrixError(t *testing.T) {
+	d := make([]int, 5)
+	_, err := NewMatrix(d, 3, 2)
+
+	if err.Error() != InvalidMatrixSize {
+		t.Error("check invalid matrix size fail")
+	}
+}
+
+func TestRowData(t *testing.T) {
+	{
+		var m *Matrix[int]
+		m = nil
+
+		_, err := m.RowData(2)
+		if err.Error() != NilMatrixObject {
+			t.Fatal("check nil object fail")
+		}
+
+	}
+	d := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	m, err := NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = m.RowData(-1)
+	if err.Error() != InvalidIndexError {
+		t.Error("check invalid index fail")
+	}
+
+	_, err = m.RowData(3)
+	if err.Error() != InvalidIndexError {
+		t.Error("check invalid index fail")
+	}
+	expRow := []int{1, 2, 3}
+	row, err := m.RowData(0)
+	if err != nil {
+		t.Error(err)
+	}
+	if diff := cmp.Diff(expRow, row); diff != "" {
+		t.Error(diff)
+	}
+
+}
+
+func TestAllOfRow(t *testing.T) {
+
 }
