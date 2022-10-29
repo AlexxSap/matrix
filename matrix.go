@@ -1,6 +1,8 @@
 package matrix
 
-import "errors"
+import (
+	"errors"
+)
 
 const (
 	InvalidIndexError = "InvalidIndexError"
@@ -8,16 +10,19 @@ const (
 	InvalidMatrixSize = "InvalidMatrixSize"
 )
 
+// Matrix represent simple square of any type data
 type Matrix[T any] struct {
 	cells    []T
 	rowCount int
 	colCount int
 }
 
+// NewZeroMatrix create default initialized matrix with specified size
 func NewZeroMatrix[T any](rows, columns int) *Matrix[T] {
 	return &Matrix[T]{make([]T, rows*columns), rows, columns}
 }
 
+// New Matrix create matrix from slice of data with spicified size
 func NewMatrix[T any](data []T, rows, columns int) (*Matrix[T], error) {
 	if len(data) != rows*columns {
 		return nil, errors.New(InvalidMatrixSize)
@@ -25,6 +30,7 @@ func NewMatrix[T any](data []T, rows, columns int) (*Matrix[T], error) {
 	return &Matrix[T]{data, rows, columns}, nil
 }
 
+// index convert square coords into slice index
 func (m *Matrix[T]) index(row, col int) (int, error) {
 	if m == nil {
 		return 0, errors.New(NilMatrixObject)
@@ -35,6 +41,7 @@ func (m *Matrix[T]) index(row, col int) (int, error) {
 	return m.colCount*row + col, nil
 }
 
+// pos convert slice index int square coords
 func (m *Matrix[T]) pos(index int) (int, int, error) {
 	if m == nil {
 		return 0, 0, errors.New(NilMatrixObject)
@@ -45,6 +52,7 @@ func (m *Matrix[T]) pos(index int) (int, int, error) {
 	return index / m.colCount, index - (index/m.colCount)*m.colCount, nil
 }
 
+// RowData get slice of values stored in spicified row
 func (m *Matrix[T]) RowData(row int) ([]T, error) {
 	if m == nil {
 		return []T{}, errors.New(NilMatrixObject)
@@ -64,6 +72,7 @@ func (m *Matrix[T]) RowData(row int) ([]T, error) {
 	return res, nil
 }
 
+// ColumnData get slice of values stored in spicified column
 func (m *Matrix[T]) ColumnData(col int) ([]T, error) {
 	if m == nil {
 		return []T{}, errors.New(NilMatrixObject)
@@ -81,6 +90,7 @@ func (m *Matrix[T]) ColumnData(col int) ([]T, error) {
 	return res, nil
 }
 
+// AllOfRow check `f` for each value on `row`
 func (m *Matrix[T]) AllOfRow(row int, f func(cell T) bool) (bool, error) {
 	if m == nil {
 		return false, errors.New(NilMatrixObject)
@@ -99,7 +109,24 @@ func (m *Matrix[T]) AllOfRow(row int, f func(cell T) bool) (bool, error) {
 	return true, nil
 }
 
+// AllOfColumn check `f` for each value on `col`
+func (m *Matrix[T]) AllOfColumn(col int, f func(cell T) bool) (bool, error) {
+	if m == nil {
+		return false, errors.New(NilMatrixObject)
+	}
+	if col < 0 || col >= m.colCount {
+		return false, errors.New(InvalidIndexError)
+	}
+
+	r, _ := m.ColumnData(col)
+
+	for _, cell := range r {
+		if !f(cell) {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
 /// TODO сдвиг строк-столбцов
-/// транспонирование
 /// сдвиг отдельных ячеек
-/// проверка условия для столбца

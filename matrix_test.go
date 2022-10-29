@@ -201,8 +201,6 @@ func TestRowData(t *testing.T) {
 func TestColumnData(t *testing.T) {
 
 	var m *Matrix[int]
-	m = nil
-
 	_, err := m.ColumnData(2)
 	if err.Error() != NilMatrixObject {
 		t.Fatal("check nil object fail")
@@ -250,8 +248,6 @@ func TestColumnData(t *testing.T) {
 func TestAllOfRow(t *testing.T) {
 
 	var m *Matrix[int]
-	m = nil
-
 	_, err := m.AllOfRow(2, func(cell int) bool { return false })
 	if err.Error() != NilMatrixObject {
 		t.Fatal("check nil object fail")
@@ -264,19 +260,19 @@ func TestAllOfRow(t *testing.T) {
 	}
 
 	f := func(val int) bool {
-		return val%4 == 0
+		return val%3 == 0
 	}
 
-	_, err = m.AllOfRow(-1, f)
+	_, err = m.AllOfColumn(-1, f)
 	if err.Error() != InvalidIndexError {
 		t.Error("check invalid index fail")
 	}
-	_, err = m.AllOfRow(11, f)
+	_, err = m.AllOfColumn(11, f)
 	if err.Error() != InvalidIndexError {
 		t.Error("check invalid index fail")
 	}
 
-	actual, err := m.AllOfRow(0, f)
+	actual, err := m.AllOfColumn(1, f)
 	if err != nil {
 		t.Error(err)
 	}
@@ -285,7 +281,7 @@ func TestAllOfRow(t *testing.T) {
 		t.Errorf("act: %t exp: %t", actual, false)
 	}
 
-	actual, err = m.AllOfRow(1, f)
+	actual, err = m.AllOfColumn(2, f)
 	if err != nil {
 		t.Error(err)
 	}
