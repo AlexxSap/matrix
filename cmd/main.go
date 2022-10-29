@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"matrix"
+	"https://github.com/AlexxSap/matrix"
 )
 
 func main() {
