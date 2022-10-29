@@ -23,13 +23,6 @@ func compareSlices[T comparable](act, exp []T) error {
 
 func Test_Index(t *testing.T) {
 	m := NewZeroMatrix[int](3, 3)
-	/*
-		column \ row    0 1 2
-						_ _ _
-					0 | 0 1 2
-					1 | 3 4 5
-					2 | 6 7 8
-	*/
 
 	test := func(row, column, expected int) {
 		t.Run(strconv.Itoa(expected), func(t *testing.T) {
@@ -56,13 +49,6 @@ func Test_Index(t *testing.T) {
 
 func Test_Pos(t *testing.T) {
 	m := NewZeroMatrix[int](3, 3)
-	/*
-		column \ row    0 1 2
-						_ _ _
-					0 | 0 1 2
-					1 | 3 4 5
-					2 | 6 7 8
-	*/
 
 	test := func(index, expRow, expCol int) {
 		t.Run(strconv.Itoa(index), func(t *testing.T) {
@@ -290,4 +276,48 @@ func TestAllOfRow(t *testing.T) {
 		t.Errorf("act: %t exp: %t", actual, true)
 	}
 
+}
+
+func TestShiftRowsDown(t *testing.T) {
+	var m *Matrix[int]
+	err := m.ShiftRowsDown()
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = m.ShiftRowsDown()
+	if err != nil {
+		t.Error(err)
+	}
+
+	exp := []int{0, 0, 0, 1, 2, 3, 4, 5, 6}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	err = m.ShiftRowsDown()
+	if err != nil {
+		t.Error(err)
+	}
+
+	exp = []int{0, 0, 0, 0, 0, 0, 1, 2, 3}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	err = m.ShiftRowsDown()
+	if err != nil {
+		t.Error(err)
+	}
+
+	exp = []int{0, 0, 0, 0, 0, 0, 0, 0, 0}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
 }

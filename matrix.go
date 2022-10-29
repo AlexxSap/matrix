@@ -128,5 +128,20 @@ func (m *Matrix[T]) AllOfColumn(col int, f func(cell T) bool) (bool, error) {
 	return true, nil
 }
 
-/// TODO сдвиг строк-столбцов
-/// сдвиг отдельных ячеек
+// ShiftRowsDown shift all rows down to 1 row. First row make default values row.
+func (m *Matrix[T]) ShiftRowsDown() error {
+	if m == nil {
+		return errors.New(NilMatrixObject)
+	}
+
+	for i := len(m.cells) - 1; i >= m.colCount; i-- {
+		m.cells[i] = m.cells[i-m.colCount]
+	}
+
+	var def T
+	for i := 0; i < m.colCount; i++ {
+		m.cells[i] = def
+	}
+
+	return nil
+}
