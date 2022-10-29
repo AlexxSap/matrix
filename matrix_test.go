@@ -198,6 +198,55 @@ func TestRowData(t *testing.T) {
 	}
 }
 
+func TestColumnData(t *testing.T) {
+
+	var m *Matrix[int]
+	m = nil
+
+	_, err := m.ColumnData(2)
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, err = m.ColumnData(-1)
+	if err.Error() != InvalidIndexError {
+		t.Error("check invalid index fail")
+	}
+
+	_, err = m.ColumnData(3)
+	if err.Error() != InvalidIndexError {
+		t.Error("check invalid index fail")
+	}
+	expRow := []int{1, 4, 7}
+	col, err := m.ColumnData(0)
+	if err != nil {
+		t.Error(err)
+	}
+	if cmpRes := compareSlices(col, expRow); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	strs := []string{"1", "2", "3", "4", "some 5", "or 6", "7", "8", "9"}
+	ms, err := NewMatrix(strs, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expStrings := []string{"2", "some 5", "8"}
+	colStrings, err := ms.ColumnData(1)
+	if err != nil {
+		t.Error(err)
+	}
+	if cmpRes := compareSlices(colStrings, expStrings); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+}
 func TestAllOfRow(t *testing.T) {
 
 	var m *Matrix[int]

@@ -64,6 +64,23 @@ func (m *Matrix[T]) RowData(row int) ([]T, error) {
 	return res, nil
 }
 
+func (m *Matrix[T]) ColumnData(col int) ([]T, error) {
+	if m == nil {
+		return []T{}, errors.New(NilMatrixObject)
+	}
+	if col < 0 || col >= m.colCount {
+		return []T{}, errors.New(InvalidIndexError)
+	}
+
+	res := make([]T, 0, m.rowCount)
+	for i := 0; i < m.rowCount; i++ {
+		index, _ := m.index(i, col)
+		res = append(res, m.cells[index])
+	}
+
+	return res, nil
+}
+
 func (m *Matrix[T]) AllOfRow(row int, f func(cell T) bool) (bool, error) {
 	if m == nil {
 		return false, errors.New(NilMatrixObject)
