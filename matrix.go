@@ -146,6 +146,7 @@ func (m *Matrix[T]) ShiftRowsDown() error {
 	return nil
 }
 
+// Set value `value` to cell [row, column]
 func (m *Matrix[T]) Set(row, column int, value T) error {
 	if m == nil {
 		return errors.New(NilMatrixObject)
