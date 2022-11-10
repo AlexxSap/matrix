@@ -145,3 +145,18 @@ func (m *Matrix[T]) ShiftRowsDown() error {
 
 	return nil
 }
+
+func (m *Matrix[T]) Set(row, column int, value T) error {
+	if m == nil {
+		return errors.New(NilMatrixObject)
+	}
+
+	i, err := m.index(row, column)
+	if err != nil {
+		return err
+	}
+
+	m.cells[i] = value
+
+	return nil
+}

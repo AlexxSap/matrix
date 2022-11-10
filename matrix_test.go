@@ -321,3 +321,29 @@ func TestShiftRowsDown(t *testing.T) {
 		t.Error(cmpRes)
 	}
 }
+
+func TestSet(t *testing.T) {
+	var m *Matrix[int]
+	err := m.Set(1, 1, 1)
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	m.Set(1, 1, 666)
+	exp := []int{1, 2, 3, 4, 666, 6, 7, 8, 9}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	m.Set(1, 0, -666)
+	exp = []int{1, 2, 3, -666, 666, 6, 7, 8, 9}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+}
