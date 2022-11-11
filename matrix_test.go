@@ -362,8 +362,32 @@ func TestGet(t *testing.T) {
 	}
 
 	val, err := m.Get(1, 1)
+	if err != nil {
+		t.Error(err)
+	}
 	if val != 5 {
 		t.Errorf("act: %d, exp: 5", val)
+	}
+}
+
+func TestSetBatch(t *testing.T) {
+	var m *Matrix[int]
+	err := m.SetBatch(1, []struct{ row, column int }{})
+
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = m.SetBatch(666, []struct{ row, column int }{{0, 0}, {2, 2}})
+	exp := []int{666, 2, 3, 4, 5, 6, 7, 8, 666}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
 	}
 
 }

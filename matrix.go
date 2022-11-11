@@ -176,3 +176,20 @@ func (m *Matrix[T]) Get(row, column int) (T, error) {
 
 	return m.cells[i], nil
 }
+
+// SetBatch set `value` to each point [row, column] from slice `points`
+func (m *Matrix[T]) SetBatch(value T, points []struct{ row, column int }) error {
+	if m == nil {
+		return errors.New(NilMatrixObject)
+	}
+
+	for _, point := range points {
+		i, err := m.index(point.row, point.column)
+		if err != nil {
+			return err
+		}
+		m.cells[i] = value
+	}
+
+	return nil
+}
