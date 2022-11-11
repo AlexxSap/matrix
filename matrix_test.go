@@ -385,6 +385,9 @@ func TestSetBatch(t *testing.T) {
 	}
 
 	err = m.SetBatch(666, []struct{ row, column int }{{0, 0}, {2, 2}})
+	if err != nil {
+		t.Error(err)
+	}
 	exp := []int{666, 2, 3, 4, 5, 6, 7, 8, 666}
 	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
 		t.Error(cmpRes)
