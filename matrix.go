@@ -90,6 +90,25 @@ func (m *Matrix[T]) ColumnData(col int) ([]T, error) {
 	return res, nil
 }
 
+// AnyOfPoints check if for any of `points` success functor `f`
+func (m *Matrix[T]) AnyOfPoints(points []struct{ row, column int }, f func(cell T) bool) (bool, error) {
+	if m == nil {
+		return false, errors.New(NilMatrixObject)
+	}
+
+	for _, point := range points {
+		i, err := m.index(point.row, point.column)
+		if err != nil {
+			return false, err
+		}
+		if f(m.cells[i]) {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
 // AllOfRow check `f` for each value on `row`
 func (m *Matrix[T]) AllOfRow(row int, f func(cell T) bool) (bool, error) {
 	if m == nil {

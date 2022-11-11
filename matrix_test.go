@@ -391,3 +391,39 @@ func TestSetBatch(t *testing.T) {
 	}
 
 }
+
+func TestAnyOfPoints(t *testing.T) {
+	var m *Matrix[int]
+	_, err := m.AnyOfPoints([]struct{ row, column int }{}, func(cell int) bool { return false })
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{1, 2, 3, 4, 8, 12, 7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	f := func(val int) bool {
+		return val%3 == 0
+	}
+	actual, err := m.AnyOfPoints([]struct{ row, column int }{{0, 0}, {1, 0}}, f)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if actual {
+		t.Errorf("act: %t exp: %t", actual, false)
+	}
+
+	actual, err = m.AnyOfPoints([]struct{ row, column int }{{0, 2}, {1, 2}}, f)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !actual {
+		t.Errorf("act: %t exp: %t", actual, true)
+	}
+
+}
