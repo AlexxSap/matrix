@@ -161,3 +161,18 @@ func (m *Matrix[T]) Set(row, column int, value T) error {
 
 	return nil
 }
+
+// Get `value` from matrix on [row,column]
+func (m *Matrix[T]) Get(row, column int) (T, error) {
+	var empty T
+	if m == nil {
+		return empty, errors.New(NilMatrixObject)
+	}
+
+	i, err := m.index(row, column)
+	if err != nil {
+		return empty, err
+	}
+
+	return m.cells[i], nil
+}

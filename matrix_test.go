@@ -347,3 +347,23 @@ func TestSet(t *testing.T) {
 		t.Error(cmpRes)
 	}
 }
+
+func TestGet(t *testing.T) {
+	var m *Matrix[int]
+	_, err := m.Get(1, 1)
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	val, err := m.Get(1, 1)
+	if val != 5 {
+		t.Errorf("act: %d, exp: 5", val)
+	}
+
+}
