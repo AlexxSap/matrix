@@ -10,6 +10,18 @@ const (
 	InvalidMatrixSize = "InvalidMatrixSize"
 )
 
+// PairIterator interface for iteraing on any collection with 2 values
+type PairIterator interface {
+	// Begin set iterator to begin
+	Begin()
+	// Next iterate to the next element or to the first element (if it is first call) and return true if element exists
+	Next() bool
+	// First get first value from pair
+	First() int
+	// Second get second value from pair
+	Second() int
+}
+
 // Matrix represent simple square of any type data
 type Matrix[T any] struct {
 	cells    []T
@@ -30,6 +42,58 @@ func NewMatrix[T any](data []T, rows, columns int) (*Matrix[T], error) {
 	return &Matrix[T]{data, rows, columns}, nil
 }
 
+func calcIndex(row, col, maxCol int) int {
+	return maxCol*row + col
+}
+
+// NewSquareMatrixFromPoints create square matrix of int with filled by
+// `value` cells from `points`. Other cells filled by default value for type T.
+func NewSquareMatrixFromPoints[T any](points PairIterator, value T) *Matrix[T] {
+	max := 0
+	calcMax := func(x, y int) {
+		if x > max {
+			max = x
+		}
+		if y > max {
+			max = y
+		}
+	}
+
+	points.Begin()
+	for points.Next() {
+		calcMax(points.First(), points.Second())
+	}
+	max++
+
+	d := make([]T, max*max, max*max)
+	points.Begin()
+	for points.Next() {
+		d[calcIndex(points.First(), points.Second(), max)] = value
+	}
+
+	m, _ := NewMatrix(d, max, max)
+	return m
+}
+
+// Filtered get slice of points {row, column} represents matrix points which satisfy `f`
+func (m *Matrix[T]) Filtered(f func(cell T) bool) ([]struct{ row, column int }, error) {
+
+	if m == nil {
+		return []struct{ row, column int }{}, errors.New(NilMatrixObject)
+	}
+
+	d := make([]struct{ row, column int }, 0)
+	var value struct{ row, column int }
+	for i, val := range m.cells {
+		if f(val) {
+			value.row, value.column, _ = m.pos(i)
+			d = append(d, value)
+		}
+	}
+
+	return d, nil
+}
+
 // index convert square coords into slice index
 func (m *Matrix[T]) index(row, col int) (int, error) {
 	if m == nil {
@@ -38,7 +102,8 @@ func (m *Matrix[T]) index(row, col int) (int, error) {
 	if row < 0 || col < 0 || row >= m.rowCount || col >= m.colCount {
 		return 0, errors.New(InvalidIndexError)
 	}
-	return m.colCount*row + col, nil
+
+	return calcIndex(row, col, m.colCount), nil
 }
 
 // pos convert slice index int square coords
@@ -88,16 +153,6 @@ func (m *Matrix[T]) ColumnData(col int) ([]T, error) {
 	}
 
 	return res, nil
-}
-
-// PairIterator interface for iteraing on any collection with 2 values
-type PairIterator interface {
-	// Next iterate to the next element or to the first element (if it is first call) and return true if element exists
-	Next() bool
-	// First get first value from pair
-	First() int
-	// Second get second value from pair
-	Second() int
 }
 
 // AnyOfPoints check if for any of `points` success functor `f`
@@ -207,13 +262,13 @@ func (m *Matrix[T]) Get(row, column int) (T, error) {
 }
 
 // SetBatch set `value` to each point [row, column] from slice `points`
-func (m *Matrix[T]) SetBatch(value T, points []struct{ row, column int }) error {
+func (m *Matrix[T]) SetBatch(value T, points PairIterator) error {
 	if m == nil {
 		return errors.New(NilMatrixObject)
 	}
 
-	for _, point := range points {
-		i, err := m.index(point.row, point.column)
+	for points.Next() {
+		i, err := m.index(points.First(), points.Second())
 		if err != nil {
 			return err
 		}

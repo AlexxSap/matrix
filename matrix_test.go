@@ -372,7 +372,7 @@ func TestGet(t *testing.T) {
 
 func TestSetBatch(t *testing.T) {
 	var m *Matrix[int]
-	err := m.SetBatch(1, []struct{ row, column int }{})
+	err := m.SetBatch(1, &Points{[]struct{ row, column int }{}, 0})
 
 	if err.Error() != NilMatrixObject {
 		t.Fatal("check nil object fail")
@@ -384,7 +384,7 @@ func TestSetBatch(t *testing.T) {
 		t.Error(err)
 	}
 
-	err = m.SetBatch(666, []struct{ row, column int }{{0, 0}, {2, 2}})
+	err = m.SetBatch(666, &Points{[]struct{ row, column int }{{0, 0}, {2, 2}}, 0})
 	if err != nil {
 		t.Error(err)
 	}
@@ -398,6 +398,14 @@ func TestSetBatch(t *testing.T) {
 type Points struct {
 	data  []struct{ row, column int }
 	index int
+}
+
+func makeIter(p []struct{ row, column int }) *Points {
+	return &Points{p, 0}
+}
+
+func (p *Points) Begin() {
+	p.index = 0
 }
 
 func (p *Points) Next() bool {
@@ -421,7 +429,7 @@ func (p *Points) Second() int {
 
 func TestAnyOfPoints(t *testing.T) {
 	var m *Matrix[int]
-	_, err := m.AnyOfPoints(&Points{[]struct{ row, column int }{}, 0}, func(cell int) bool { return false })
+	_, err := m.AnyOfPoints(makeIter([]struct{ row, column int }{}), func(cell int) bool { return false })
 	if err.Error() != NilMatrixObject {
 		t.Fatal("check nil object fail")
 	}
@@ -435,7 +443,7 @@ func TestAnyOfPoints(t *testing.T) {
 	f := func(val int) bool {
 		return val%3 == 0
 	}
-	actual, err := m.AnyOfPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}}, 0}, f)
+	actual, err := m.AnyOfPoints(makeIter([]struct{ row, column int }{{0, 0}, {1, 0}}), f)
 	if err != nil {
 		t.Error(err)
 	}
@@ -444,7 +452,7 @@ func TestAnyOfPoints(t *testing.T) {
 		t.Errorf("act: %t exp: %t", actual, false)
 	}
 
-	actual, err = m.AnyOfPoints(&Points{[]struct{ row, column int }{{0, 2}, {1, 2}}, 0}, f)
+	actual, err = m.AnyOfPoints(makeIter([]struct{ row, column int }{{0, 2}, {1, 2}}), f)
 	if err != nil {
 		t.Error(err)
 	}
@@ -674,4 +682,71 @@ func TestRotade5x2(t *testing.T) {
 	if m.rowCount != 5 || m.colCount != 2 {
 		t.Error("check row and colun size")
 	}
+}
+
+func TestNewSquareMatrixFromPoints3x3(t *testing.T) {
+	m := NewSquareMatrixFromPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}, {1, 1}, {2, 1}}, 0}, 1)
+
+	exp := []int{
+		1, 0, 0,
+		1, 1, 0,
+		0, 1, 0}
+
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	if m.rowCount != 3 || m.colCount != 3 {
+		t.Error("check row and colun size")
+	}
+}
+
+func TestNewSquareMatrixFromPoints4x4(t *testing.T) {
+	m := NewSquareMatrixFromPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}, {1, 1}, {2, 1}, {3, 3}}, 0}, 666)
+
+	exp := []int{
+		666, 0, 0, 0,
+		666, 666, 0, 0,
+		0, 666, 0, 0,
+		0, 0, 0, 666}
+
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	if m.rowCount != 4 || m.colCount != 4 {
+		t.Error("check row and colun size")
+	}
+}
+
+func TestFiltered(t *testing.T) {
+	var m *Matrix[int]
+	_, err := m.Filtered(func(cell int) bool { return false })
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{
+		1, 2, 3,
+		4, 5, 6,
+		7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	f := func(cell int) bool {
+		return cell%2 == 0 || cell == 5
+	}
+
+	act, err := m.Filtered(f)
+	if err != nil {
+		t.Error(err)
+	}
+
+	exp := []struct{ row, column int }{{0, 1}, {1, 0}, {1, 1}, {1, 2}, {2, 1}}
+	if cmpRes := compareSlices(act, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
 }
