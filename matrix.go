@@ -90,14 +90,24 @@ func (m *Matrix[T]) ColumnData(col int) ([]T, error) {
 	return res, nil
 }
 
+// PairIterator interface for iteraing on any collection with 2 values
+type PairIterator interface {
+	// Next iterate to the next element or to the first element (if it is first call) and return true if element exists
+	Next() bool
+	// First get first value from pair
+	First() int
+	// Second get second value from pair
+	Second() int
+}
+
 // AnyOfPoints check if for any of `points` success functor `f`
-func (m *Matrix[T]) AnyOfPoints(points []struct{ row, column int }, f func(cell T) bool) (bool, error) {
+func (m *Matrix[T]) AnyOfPoints(points PairIterator, f func(cell T) bool) (bool, error) {
 	if m == nil {
 		return false, errors.New(NilMatrixObject)
 	}
 
-	for _, point := range points {
-		i, err := m.index(point.row, point.column)
+	for points.Next() {
+		i, err := m.index(points.First(), points.Second())
 		if err != nil {
 			return false, err
 		}

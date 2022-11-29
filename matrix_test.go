@@ -395,9 +395,33 @@ func TestSetBatch(t *testing.T) {
 
 }
 
+type Points struct {
+	data  []struct{ row, column int }
+	index int
+}
+
+func (p *Points) Next() bool {
+	if len(p.data) == 0 {
+		return false
+	}
+	if p.index < len(p.data) {
+		p.index++
+		return true
+	}
+	return false
+}
+
+func (p *Points) First() int {
+	return p.data[p.index-1].row
+}
+
+func (p *Points) Second() int {
+	return p.data[p.index-1].column
+}
+
 func TestAnyOfPoints(t *testing.T) {
 	var m *Matrix[int]
-	_, err := m.AnyOfPoints([]struct{ row, column int }{}, func(cell int) bool { return false })
+	_, err := m.AnyOfPoints(&Points{[]struct{ row, column int }{}, 0}, func(cell int) bool { return false })
 	if err.Error() != NilMatrixObject {
 		t.Fatal("check nil object fail")
 	}
@@ -411,7 +435,7 @@ func TestAnyOfPoints(t *testing.T) {
 	f := func(val int) bool {
 		return val%3 == 0
 	}
-	actual, err := m.AnyOfPoints([]struct{ row, column int }{{0, 0}, {1, 0}}, f)
+	actual, err := m.AnyOfPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}}, 0}, f)
 	if err != nil {
 		t.Error(err)
 	}
@@ -420,7 +444,7 @@ func TestAnyOfPoints(t *testing.T) {
 		t.Errorf("act: %t exp: %t", actual, false)
 	}
 
-	actual, err = m.AnyOfPoints([]struct{ row, column int }{{0, 2}, {1, 2}}, f)
+	actual, err = m.AnyOfPoints(&Points{[]struct{ row, column int }{{0, 2}, {1, 2}}, 0}, f)
 	if err != nil {
 		t.Error(err)
 	}
