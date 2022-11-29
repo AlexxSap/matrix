@@ -594,3 +594,60 @@ func TestMirrorRows4x3(t *testing.T) {
 		t.Error(cmpRes)
 	}
 }
+
+func TestRotade3x3(t *testing.T) {
+	var m *Matrix[int]
+	err := m.Rotade()
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{
+		1, 2, 3,
+		4, 5, 6,
+		7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+	m.Rotade()
+
+	exp := []int{
+		7, 4, 1,
+		8, 5, 2,
+		9, 6, 3}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+}
+
+func TestRotade5x2(t *testing.T) {
+	var m *Matrix[int]
+	err := m.Rotade()
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{
+		1, 2, 3, 4, 5,
+		6, 7, 8, 9, 10}
+	m, err = NewMatrix(d, 2, 5)
+	if err != nil {
+		t.Error(err)
+	}
+	m.Rotade()
+
+	exp := []int{
+		6, 1,
+		7, 2,
+		8, 3,
+		9, 4,
+		10, 5}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	if m.rowCount != 5 || m.colCount != 2 {
+		t.Error("check row and colun size")
+	}
+}

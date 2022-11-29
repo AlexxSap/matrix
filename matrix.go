@@ -254,7 +254,6 @@ func (m *Matrix[T]) MirrorRows() error {
 func (m *Matrix[T]) MirrorColumns() error {
 	if m == nil {
 		return errors.New(NilMatrixObject)
-
 	}
 
 	for bCol, eCol := 0, m.colCount-1; bCol < eCol; bCol, eCol = bCol+1, eCol-1 {
@@ -263,6 +262,25 @@ func (m *Matrix[T]) MirrorColumns() error {
 			e, _ := m.index(row, eCol)
 			m.cells[b], m.cells[e] = m.cells[e], m.cells[b]
 		}
+	}
+
+	return nil
+}
+
+// Rotade rotade matrix to 90 grad
+func (m *Matrix[T]) Rotade() error {
+	if m == nil {
+		return errors.New(NilMatrixObject)
+	}
+
+	err := m.Transpose()
+	if err != nil {
+		return err
+	}
+
+	err = m.MirrorColumns()
+	if err != nil {
+		return err
 	}
 
 	return nil
