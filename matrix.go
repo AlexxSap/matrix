@@ -232,3 +232,38 @@ func (m *Matrix[T]) Transpose() error {
 
 	return nil
 }
+
+// MirrorRows reverse row order
+func (m *Matrix[T]) MirrorRows() error {
+	if m == nil {
+		return errors.New(NilMatrixObject)
+	}
+
+	for bRow, eRow := 0, m.rowCount-1; bRow < eRow; bRow, eRow = bRow+1, eRow-1 {
+		for c := 0; c < m.colCount; c++ {
+			b, _ := m.index(bRow, c)
+			e, _ := m.index(eRow, c)
+			m.cells[b], m.cells[e] = m.cells[e], m.cells[b]
+		}
+	}
+
+	return nil
+}
+
+// MirrorColumns reverse column order
+func (m *Matrix[T]) MirrorColumns() error {
+	if m == nil {
+		return errors.New(NilMatrixObject)
+
+	}
+
+	for bCol, eCol := 0, m.colCount-1; bCol < eCol; bCol, eCol = bCol+1, eCol-1 {
+		for row := 0; row < m.rowCount; row++ {
+			b, _ := m.index(row, bCol)
+			e, _ := m.index(row, eCol)
+			m.cells[b], m.cells[e] = m.cells[e], m.cells[b]
+		}
+	}
+
+	return nil
+}

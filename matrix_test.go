@@ -488,3 +488,109 @@ func TestTransposeRect(t *testing.T) {
 		t.Error("check row and colun size")
 	}
 }
+
+func TestMirrorColumns3x3(t *testing.T) {
+	var m *Matrix[int]
+	err := m.MirrorColumns()
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{
+		1, 2, 3,
+		4, 5, 6,
+		7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+	m.MirrorColumns()
+
+	exp := []int{
+		3, 2, 1,
+		6, 5, 4,
+		9, 8, 7}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+}
+
+func TestMirrorRows3x3(t *testing.T) {
+	var m *Matrix[int]
+	err := m.MirrorRows()
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{
+		1, 2, 3,
+		4, 5, 6,
+		7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+	m.MirrorRows()
+
+	exp := []int{
+		7, 8, 9,
+		4, 5, 6,
+		1, 2, 3}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+}
+
+func TestMirrorColumns3x6(t *testing.T) {
+	var m *Matrix[int]
+	err := m.MirrorColumns()
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{
+		1, 2, 3, 4, 5, 6,
+		7, 8, 9, 10, 11, 12,
+		13, 14, 15, 16, 17, 18}
+	m, err = NewMatrix(d, 3, 6)
+	if err != nil {
+		t.Error(err)
+	}
+	m.MirrorColumns()
+
+	exp := []int{
+		6, 5, 4, 3, 2, 1,
+		12, 11, 10, 9, 8, 7,
+		18, 17, 16, 15, 14, 13}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+}
+
+func TestMirrorRows4x3(t *testing.T) {
+	var m *Matrix[int]
+	err := m.MirrorRows()
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{
+		1, 2, 3,
+		4, 5, 6,
+		7, 8, 9,
+		10, 11, 12}
+	m, err = NewMatrix(d, 4, 3)
+	if err != nil {
+		t.Error(err)
+	}
+	m.MirrorRows()
+
+	exp := []int{
+		10, 11, 12,
+		7, 8, 9,
+		4, 5, 6,
+		1, 2, 3}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+}
