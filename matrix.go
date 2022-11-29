@@ -65,7 +65,7 @@ func NewSquareMatrixFromPoints[T any](points PairIterator, value T) *Matrix[T] {
 	}
 	max++
 
-	d := make([]T, max*max, max*max)
+	d := make([]T, max*max)
 	points.Begin()
 	for points.Next() {
 		d[calcIndex(points.First(), points.Second(), max)] = value
