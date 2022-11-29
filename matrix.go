@@ -212,3 +212,23 @@ func (m *Matrix[T]) SetBatch(value T, points []struct{ row, column int }) error 
 
 	return nil
 }
+
+// Transpose transpose matrix
+func (m *Matrix[T]) Transpose() error {
+	if m == nil {
+		return errors.New(NilMatrixObject)
+	}
+
+	newCells := make([]T, 0, len(m.cells))
+
+	for col := 0; col < m.colCount; col++ {
+		for row := 0; row < m.rowCount; row++ {
+			d, _ := m.index(row, col)
+			newCells = append(newCells, m.cells[d])
+		}
+	}
+	m.cells = newCells
+	m.colCount, m.rowCount = m.rowCount, m.colCount
+
+	return nil
+}

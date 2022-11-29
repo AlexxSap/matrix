@@ -430,3 +430,61 @@ func TestAnyOfPoints(t *testing.T) {
 	}
 
 }
+
+func TestTransposeSquare(t *testing.T) {
+	var m *Matrix[int]
+	err := m.Transpose()
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{
+		1, 2, 3,
+		4, 5, 6,
+		7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+	m.Transpose()
+
+	exp := []int{1, 4, 7, 2, 5, 8, 3, 6, 9}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	if m.rowCount != 3 || m.colCount != 3 {
+		t.Error("check row and colun size")
+	}
+}
+
+func TestTransposeRect(t *testing.T) {
+	var m *Matrix[int]
+	err := m.Transpose()
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{
+		1, 2, 3, 4, 5,
+		6, 7, 8, 9, 10}
+	m, err = NewMatrix(d, 2, 5)
+	if err != nil {
+		t.Error(err)
+	}
+	m.Transpose()
+
+	exp := []int{
+		1, 6,
+		2, 7,
+		3, 8,
+		4, 9,
+		5, 10}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	if m.rowCount != 5 || m.colCount != 2 {
+		t.Error("check row and colun size")
+	}
+}
