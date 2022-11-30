@@ -231,10 +231,11 @@ func TestColumnData(t *testing.T) {
 		t.Error(cmpRes)
 	}
 }
-func TestAllOfRow(t *testing.T) {
+
+func TestAllOfColumn(t *testing.T) {
 
 	var m *Matrix[int]
-	_, err := m.AllOfRow(2, func(cell int) bool { return false })
+	_, err := m.AllOfColumn(2, func(cell int) bool { return false })
 	if err.Error() != NilMatrixObject {
 		t.Fatal("check nil object fail")
 	}
@@ -268,6 +269,53 @@ func TestAllOfRow(t *testing.T) {
 	}
 
 	actual, err = m.AllOfColumn(2, f)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !actual {
+		t.Errorf("act: %t exp: %t", actual, true)
+	}
+
+}
+
+func TestAllOfRow(t *testing.T) {
+
+	var m *Matrix[int]
+	_, err := m.AllOfRow(2, func(cell int) bool { return false })
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{1, 2, 3, 4, 8, 12, 7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	f := func(val int) bool {
+		return val >= 7
+	}
+
+	_, err = m.AllOfRow(-1, f)
+	if err.Error() != InvalidIndexError {
+		t.Error("check invalid index fail")
+	}
+	_, err = m.AllOfRow(11, f)
+	if err.Error() != InvalidIndexError {
+		t.Error("check invalid index fail")
+	}
+
+	actual, err := m.AllOfRow(1, f)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if actual {
+		t.Errorf("act: %t exp: %t", actual, false)
+	}
+
+	actual, err = m.AllOfRow(2, f)
 	if err != nil {
 		t.Error(err)
 	}
@@ -335,6 +383,11 @@ func TestSet(t *testing.T) {
 		t.Error(err)
 	}
 
+	err = m.Set(1, 11, 666)
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
+	}
+
 	m.Set(1, 1, 666)
 	exp := []int{1, 2, 3, 4, 666, 6, 7, 8, 9}
 	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
@@ -361,6 +414,11 @@ func TestGet(t *testing.T) {
 		t.Error(err)
 	}
 
+	_, err = m.Get(1, 11)
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
+	}
+
 	val, err := m.Get(1, 1)
 	if err != nil {
 		t.Error(err)
@@ -382,6 +440,11 @@ func TestSetBatch(t *testing.T) {
 	m, err = NewMatrix(d, 3, 3)
 	if err != nil {
 		t.Error(err)
+	}
+
+	err = m.SetBatch(666, &Points{[]struct{ row, column int }{{0, 0}, {22, 2}}, 0})
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
 	}
 
 	err = m.SetBatch(666, &Points{[]struct{ row, column int }{{0, 0}, {2, 2}}, 0})
@@ -443,6 +506,12 @@ func TestAnyOfPoints(t *testing.T) {
 	f := func(val int) bool {
 		return val%3 == 0
 	}
+
+	_, err = m.AnyOfPoints(makeIter([]struct{ row, column int }{{0, 0}, {11, 0}}), f)
+	if err.Error() != InvalidIndexError {
+		t.Fatal("check invalid index fail")
+	}
+
 	actual, err := m.AnyOfPoints(makeIter([]struct{ row, column int }{{0, 0}, {1, 0}}), f)
 	if err != nil {
 		t.Error(err)
@@ -627,9 +696,9 @@ func TestMirrorRows4x3(t *testing.T) {
 	}
 }
 
-func TestRotade3x3(t *testing.T) {
+func TestRotate3x3(t *testing.T) {
 	var m *Matrix[int]
-	err := m.Rotade()
+	err := m.Rotate()
 	if err.Error() != NilMatrixObject {
 		t.Fatal("check nil object fail")
 	}
@@ -642,7 +711,7 @@ func TestRotade3x3(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	m.Rotade()
+	m.Rotate()
 
 	exp := []int{
 		7, 4, 1,
@@ -653,9 +722,9 @@ func TestRotade3x3(t *testing.T) {
 	}
 }
 
-func TestRotade5x2(t *testing.T) {
+func TestRotate5x2(t *testing.T) {
 	var m *Matrix[int]
-	err := m.Rotade()
+	err := m.Rotate()
 	if err.Error() != NilMatrixObject {
 		t.Fatal("check nil object fail")
 	}
@@ -667,7 +736,7 @@ func TestRotade5x2(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	m.Rotade()
+	m.Rotate()
 
 	exp := []int{
 		6, 1,
@@ -685,12 +754,12 @@ func TestRotade5x2(t *testing.T) {
 }
 
 func TestNewSquareMatrixFromPoints3x3(t *testing.T) {
-	m := NewSquareMatrixFromPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}, {1, 1}, {2, 1}}, 0}, 1)
+	m := NewSquareMatrixFromPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}, {1, 1}, {1, 2}}, 0}, 1)
 
 	exp := []int{
 		1, 0, 0,
-		1, 1, 0,
-		0, 1, 0}
+		1, 1, 1,
+		0, 0, 0}
 
 	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
 		t.Error(cmpRes)

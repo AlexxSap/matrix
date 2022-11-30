@@ -332,8 +332,8 @@ func (m *Matrix[T]) MirrorColumns() error {
 	return nil
 }
 
-// Rotade rotade matrix to 90 grad
-func (m *Matrix[T]) Rotade() error {
+// Rotate rotate matrix to 90 grad
+func (m *Matrix[T]) Rotate() error {
 	if m == nil {
 		return errors.New(NilMatrixObject)
 	}
