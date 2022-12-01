@@ -76,17 +76,17 @@ func NewSquareMatrixFromPoints[T any](points PairIterator, value T) *Matrix[T] {
 }
 
 // Filtered get slice of points {row, column} represents matrix points which satisfy `f`
-func (m *Matrix[T]) Filtered(f func(cell T) bool) ([]struct{ row, column int }, error) {
+func (m *Matrix[T]) Filtered(f func(cell T) bool) ([]struct{ Row, Column int }, error) {
 
 	if m == nil {
-		return []struct{ row, column int }{}, errors.New(NilMatrixObject)
+		return []struct{ Row, Column int }{}, errors.New(NilMatrixObject)
 	}
 
-	d := make([]struct{ row, column int }, 0)
-	var value struct{ row, column int }
+	d := make([]struct{ Row, Column int }, 0)
+	var value struct{ Row, Column int }
 	for i, val := range m.cells {
 		if f(val) {
-			value.row, value.column, _ = m.pos(i)
+			value.Row, value.Column, _ = m.pos(i)
 			d = append(d, value)
 		}
 	}

@@ -813,7 +813,7 @@ func TestFiltered(t *testing.T) {
 		t.Error(err)
 	}
 
-	exp := []struct{ row, column int }{{0, 1}, {1, 0}, {1, 1}, {1, 2}, {2, 1}}
+	exp := []struct{ Row, Column int }{{0, 1}, {1, 0}, {1, 1}, {1, 2}, {2, 1}}
 	if cmpRes := compareSlices(act, exp); cmpRes != nil {
 		t.Error(cmpRes)
 	}
