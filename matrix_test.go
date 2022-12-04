@@ -753,25 +753,24 @@ func TestRotate5x2(t *testing.T) {
 	}
 }
 
-func TestNewSquareMatrixFromPoints3x3(t *testing.T) {
-	m := NewSquareMatrixFromPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}, {1, 1}, {1, 2}}, 0}, 1)
+func TestNewMatrixFromPoints3x2(t *testing.T) {
+	m := NewMatrixFromPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}, {1, 1}, {1, 2}}, 0}, 1)
 
 	exp := []int{
 		1, 0, 0,
-		1, 1, 1,
-		0, 0, 0}
+		1, 1, 1}
 
 	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
 		t.Error(cmpRes)
 	}
 
-	if m.rowCount != 3 || m.colCount != 3 {
+	if m.rowCount != 2 || m.colCount != 3 {
 		t.Error("check row and colun size")
 	}
 }
 
-func TestNewSquareMatrixFromPoints4x4(t *testing.T) {
-	m := NewSquareMatrixFromPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}, {1, 1}, {2, 1}, {3, 3}}, 0}, 666)
+func TestNewMatrixFromPoints4x4(t *testing.T) {
+	m := NewMatrixFromPoints(&Points{[]struct{ row, column int }{{0, 0}, {1, 0}, {1, 1}, {2, 1}, {3, 3}}, 0}, 666)
 
 	exp := []int{
 		666, 0, 0, 0,

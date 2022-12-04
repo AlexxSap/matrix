@@ -46,16 +46,17 @@ func calcIndex(row, col, maxCol int) int {
 	return maxCol*row + col
 }
 
-// NewSquareMatrixFromPoints create square matrix of int with filled by
+// NewMatrixFromPoints create matrix of int with filled by
 // `value` cells from `points`. Other cells filled by default value for type T.
-func NewSquareMatrixFromPoints[T any](points PairIterator, value T) *Matrix[T] {
-	max := 0
-	calcMax := func(x, y int) {
-		if x > max {
-			max = x
+func NewMatrixFromPoints[T any](points PairIterator, value T) *Matrix[T] {
+	maxCol, maxRow := 0, 0
+	calcMax := func(row, col int) {
+		if row > maxRow {
+			maxRow = row
 		}
-		if y > max {
-			max = y
+
+		if col > maxCol {
+			maxCol = col
 		}
 	}
 
@@ -63,15 +64,16 @@ func NewSquareMatrixFromPoints[T any](points PairIterator, value T) *Matrix[T] {
 	for points.Next() {
 		calcMax(points.First(), points.Second())
 	}
-	max++
+	maxCol++
+	maxRow++
 
-	d := make([]T, max*max)
+	d := make([]T, maxCol*maxRow)
 	points.Begin()
 	for points.Next() {
-		d[calcIndex(points.First(), points.Second(), max)] = value
+		d[calcIndex(points.First(), points.Second(), maxCol)] = value
 	}
 
-	m, _ := NewMatrix(d, max, max)
+	m, _ := NewMatrix(d, maxRow, maxCol)
 	return m
 }
 
