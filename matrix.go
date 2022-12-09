@@ -219,9 +219,26 @@ func (m *Matrix[T]) ShiftRowsDown() error {
 	if m == nil {
 		return errors.New(NilMatrixObject)
 	}
+	return m.RemoveRow(m.rowCount - 1)
+}
 
-	for i := len(m.cells) - 1; i >= m.colCount; i-- {
-		m.cells[i] = m.cells[i-m.colCount]
+// RemoveRow remove `r` row and shift previous rows down
+func (m *Matrix[T]) RemoveRow(r int) error {
+	if m == nil {
+		return errors.New(NilMatrixObject)
+	}
+
+	if r < 0 || r >= m.rowCount {
+		return errors.New(InvalidIndexError)
+	}
+
+	for row := r; row > 0; row-- {
+		fromIndex, _ := m.index(row-1, 0)
+		toIndex, _ := m.index(row, 0)
+		for c := 0; c < m.colCount; c++ {
+			m.cells[toIndex+c] = m.cells[fromIndex+c]
+		}
+
 	}
 
 	var def T

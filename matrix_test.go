@@ -370,6 +370,70 @@ func TestShiftRowsDown(t *testing.T) {
 	}
 }
 
+func TestRemoveRow(t *testing.T) {
+	var m *Matrix[int]
+	err := m.RemoveRow(0)
+	if err.Error() != NilMatrixObject {
+		t.Fatal("check nil object fail")
+	}
+
+	d := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	m, err = NewMatrix(d, 3, 3)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = m.RemoveRow(-1)
+	if err.Error() != InvalidIndexError {
+		t.Error(err)
+	}
+
+	err = m.RemoveRow(3)
+	if err.Error() != InvalidIndexError {
+		t.Error(err)
+	}
+
+	err = m.RemoveRow(1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	exp := []int{0, 0, 0, 1, 2, 3, 7, 8, 9}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	err = m.RemoveRow(2)
+	if err != nil {
+		t.Error(err)
+	}
+
+	exp = []int{0, 0, 0, 0, 0, 0, 1, 2, 3}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	err = m.RemoveRow(2)
+	if err != nil {
+		t.Error(err)
+	}
+
+	exp = []int{0, 0, 0, 0, 0, 0, 0, 0, 0}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+
+	err = m.RemoveRow(1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	exp = []int{0, 0, 0, 0, 0, 0, 0, 0, 0}
+	if cmpRes := compareSlices(m.cells, exp); cmpRes != nil {
+		t.Error(cmpRes)
+	}
+}
+
 func TestSet(t *testing.T) {
 	var m *Matrix[int]
 	err := m.Set(1, 1, 1)
